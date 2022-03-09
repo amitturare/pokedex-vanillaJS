@@ -11,9 +11,13 @@ const getElements = (selection) => {
 
 // ==== Selections ==== //
 const container = getElements("#container");
+const search = getElements("#search");
+const typeSelection = getElements(".type-selection");
 
 const totalPokemons = 150;
+const pokemonArr = [];
 const colors = {
+    all: "#fff",
     fire: "#FDDFDF",
     grass: "#DEFDE0",
     electric: "#FCF7DE",
@@ -32,51 +36,91 @@ const colors = {
 const mainTypes = Object.keys(colors);
 
 // ==== API ==== //
-
-async function fetchPokemons() {
+async function getDetails() {
     for (let i = 1; i < totalPokemons; i++) {
-        await getDetails(i);
+        const url = `https://pokeapi.co/api/v2/pokemon/${i}`;
+
+        const response = await fetch(url);
+        const data = await response.json();
+
+        pokemonArr.push(data);
     }
+
+    // Update DOM
+    displayPokemonCard(pokemonArr);
+    // Update types
+    getTypes();
 }
 
-async function getDetails(id) {
-    const url = `https://pokeapi.co/api/v2/pokemon/${id}`;
+// ==== Display Pokemon Cards ==== //
+function displayPokemonCard(arr) {
+    const pokemonCards = arr
+        .map((item) => {
+            const id = item.id;
+            const name = item.name[0].toUpperCase() + item.name.slice(1);
+            const pokeTypes = item.types.map((el) => el.type.name);
+            const type = mainTypes.find((type) => pokeTypes.indexOf(type) > -1);
+            const color = colors[type];
 
-    const response = await fetch(url);
-    const pokemon = await response.json();
+            return `
+                <div class="pokemon" style="background:${color}">
+                    <div class="img-container">
+                    <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png" alt="pokemon"/>
+                    </div>
+                    <div class="info">
+                        <span class="number">#${id}</span>
+                        <h3 class="name">${name}</h3>
+                        <small class="type">Type: <span>${type.charAt(0).toUpperCase() + type.slice(1)}</span></small>
+                    </div>
+                </div>
+        `;
+        })
+        .join("");
 
-    // Update Dom
-    createPokemonCard(pokemon);
+    container.innerHTML = pokemonCards;
 }
 
-// ==== Create Pokemon Cards ==== //
-function createPokemonCard(data) {
-    const pokemonEl = document.createElement("div");
+// ==== Display Types ==== //
+function getTypes() {
+    const htmlStrings = mainTypes
+        .map((item) => {
+            return `<option value="${item}">${
+                item.charAt(0).toUpperCase() + item.slice(1)
+            }</option>`;
+        })
+        .join("");
 
-    // Add classes
-    pokemonEl.classList.add("pokemon");
-    // Create the card insides
-    const id = data.id;
-    const name = data.name[0].toUpperCase() + data.name.slice(1);
-    const pokeTypes = data.types.map((el) => el.type.name);
-    const type = mainTypes.find((type) => pokeTypes.indexOf(type) > -1);
-    const color = colors[type]
-
-    pokemonEl.innerHTML = `
-    <div class="img-container">
-        <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png" alt="pokemon"/>
-    </div>
-    <div class="info">
-        <span class="number">#${id}</span>
-        <h3 class="name">${name}</h3>
-        <small class="type">Type: <span>${type}</span></small>
-    </div>
-    `;
-    // Apply the color to the card
-    pokemonEl.style.backgroundColor = color;
-    // Append to the container div
-    container.appendChild(pokemonEl);
+    typeSelection.innerHTML = htmlStrings;
 }
+
+// ==== Sort ==== //
+typeSelection.addEventListener("change", function () {
+    const selectedType = typeSelection.value;
+
+    const filteredArr = pokemonArr.filter((pokemon) => {
+        const pokeTypes = pokemon.types.map((el) => el.type.name);
+        const type = mainTypes.find((type) => pokeTypes.indexOf(type) > -1);
+
+        return selectedType == type;
+    });
+    if (selectedType == 'all') {
+        displayPokemonCard(pokemonArr);
+    } else {
+        displayPokemonCard(filteredArr);
+    }
+});
+
+// ==== Live Search ==== //
+search.addEventListener("keyup", (e) => {
+    e.preventDefault();
+
+    const target = e.target.value.toLowerCase();
+
+    const filteredArr = pokemonArr.filter((pokemon) => {
+        return pokemon.name.includes(target);
+    });
+    displayPokemonCard(filteredArr);
+});
 
 // Onload
-fetchPokemons();
+getDetails();

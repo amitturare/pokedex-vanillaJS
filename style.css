@@ -11,20 +11,51 @@ body {
 
     margin: 0;
     font-family: "Poppins", sans-serif;
-
+    min-height: 100vh;
     display: grid;
     place-items: center;
 }
+
+/* Logo */
 .logo {
-    position: absolute;
-    top: 7.5rem;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    margin-bottom: 1rem;
+    display: grid;
+    place-items: center;
+    margin: 3rem auto;
 }
 
+/* Sorting */
+.sorting-box {
+    width: 100%;
+}
+form {
+    margin-top: 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+}
+#search {
+    width: 85%;
+    padding: 0.5rem;
+    border: 1px solid #e5e5e5;
+    border-radius: 20px;
+    font-size: 1rem;
+    outline: none;
+}
+.type-selection {
+    width: 14.25%;
+    padding: 0.5rem;
+    border: 1px solid #e5e5e5;
+    border-radius: 20px;
+    font-size: 1rem;
+    outline: none;
+}
+.is-hidden {
+    display: none;
+}
+
+/* Container and Cards */
 .container {
-    margin-top: 15rem;
+    margin-top: 2rem;
     margin-bottom: 10rem;
     display: grid;
     grid-template-columns: repeat(5, 1fr);
@@ -34,9 +65,9 @@ body {
     row-gap: 25px;
 }
 @media screen and (max-width: 850px) {
-  .container {
-      grid-template-columns: repeat(4, 1fr);
-  }
+    .container {
+        grid-template-columns: repeat(4, 1fr);
+    }
 }
 @media screen and (max-width: 500px) {
     .container {
@@ -76,4 +107,3 @@ body {
 .pokemon .name {
     margin: 15px 0 7px;
 }
-
