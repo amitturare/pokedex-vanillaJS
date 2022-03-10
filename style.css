@@ -69,11 +69,6 @@ form {
         grid-template-columns: repeat(4, 1fr);
     }
 }
-@media screen and (max-width: 500px) {
-    .container {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
 .pokemon {
     background-color: whitesmoke;
     border-radius: 20px;
@@ -106,4 +101,16 @@ form {
 }
 .pokemon .name {
     margin: 15px 0 7px;
+}
+
+@media screen and (max-width: 500px) {
+    .container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    #search {
+        width: 80%;
+    }
+    .type-selection {
+        width: 18%;
+    }
 }
